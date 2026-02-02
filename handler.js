@@ -1,19 +1,21 @@
 module.exports = async (sock, chatUpdate) => {
     try {
         const msg = chatUpdate.messages[0]
-        if (!msg.message) return
+        // KUNCI UTAMA: Jangan balas kalau pesan berasal dari nomor bot itu sendiri
+        if (!msg.message || msg.key.fromMe) return
 
         const from = msg.key.remoteJid
-        // Langsung ambil teks apa saja, mau dari reply atau chat biasa
         const text = msg.message.conversation || msg.message.extendedTextMessage?.text || ''
         
-        console.log('Ada chat masuk:', text) // Biar kelihatan di Termux kalau ada chat
+        const command = text.toLowerCase()
 
-        // BALAS SEMUA CHAT TANPA SYARAT BIAR TESNYA JELAS
-        if (text.toLowerCase()) {
-            await sock.sendMessage(from, { text: 'op. aku sibuk cok.' })
+        if (command === 'p' || command === 'nu') {
+            await sock.sendMessage(from, { text: 'op.' })
+        } 
+        else if (command.includes('halo')) {
+            await sock.sendMessage(from, { text: 'aku sibuk cok.' })
         }
     } catch (err) {
-        console.log('Error Handler:', err)
+        console.log('Error:', err)
     }
 }
