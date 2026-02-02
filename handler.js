@@ -1,29 +1,25 @@
-module.exports = async (sock, m, chatUpdate) => {
+module.exports = async (sock, chatUpdate) => {
     try {
-        const msg = m.messages[0]
+        const msg = chatUpdate.messages[0]
         if (!msg.message || msg.key.fromMe) return
-        
+
         const from = msg.key.remoteJid
-        const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').toLowerCase()
-        
-        if (global.status) {
-            await sock.sendPresenceUpdate('composing', from)
-        }
+        const type = Object.keys(msg.message)[0]
+        const text = (type === 'conversation') ? msg.message.conversation : 
+                     (type === 'extendedTextMessage') ? msg.message.extendedTextMessage.text : ''
 
         // --- LOGIKA BAHASA GAUL JAWA (HUMAN-LIKE) ---
-        
+
         if (text === 'p' || text === 'nu') {
-            // Balasan singkat & padat
-            const jawapan = ['op.', 'enek op.', 'py?', 'ha?']
+            const jawapan = ['op.', 'enek op?.', 'py?', 'ha?']
             const random = jawapan[Math.floor(Math.random() * jawapan.length)]
-            await sock.sendMessage(from, { text: random })
+            await sock.sendMessage(from, { text: random }, { quoted: msg })
         } 
         else if (text.includes('halo') || text.includes('hey')) {
-            // Balasan kasar-mesra khas tongkrongan
-            await sock.sendMessage(from, { text: 'iy enek op? aku sibuk cok.' })
+            await sock.sendMessage(from, { text: 'iy enek op? aku sibuk cok.' }, { quoted: msg })
         } 
         else if (text === 'menu') {
-            await sock.sendMessage(from, { text: 'gah, raenek menu-menuan. langsung chat wae.' })
+            await sock.sendMessage(from, { text: 'gah, raenek menu-menuan. langsung wae.' }, { quoted: msg })
         }
 
     } catch (err) {
