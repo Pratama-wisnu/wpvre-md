@@ -1,8 +1,8 @@
-const { 
-    default: makeWASocket, 
-    useMultiFileAuthState, 
-    DisconnectReason, 
-    fetchLatestBaileysVersion 
+const {
+    default: makeWASocket,
+    useMultiFileAuthState,
+    DisconnectReason,
+    fetchLatestBaileysVersion
 } = require('@whiskeysockets/baileys')
 const pino = require('pino')
 require('./config')
@@ -20,7 +20,7 @@ async function startWPVre() {
     })
 
     sock.ev.on('creds.update', saveCreds)
-    
+
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect } = update
         if (connection === 'close') {
@@ -31,7 +31,6 @@ async function startWPVre() {
         }
     })
 
-    // Menghubungkan Logika Chat ke Handler
     sock.ev.on('messages.upsert', async chatUpdate => {
         require('./handler')(sock, chatUpdate)
     })
